@@ -21,6 +21,8 @@ import { formatCurrency } from "@/utils/formatter/currency";
 import { useBondTxs } from "@/src/hooks/useBondTxs";
 import { useAppConstants } from "@/src/context/AppConstants";
 import { useTokenSymbol } from "@/src/hooks/useTokenSymbol";
+import { OutlinedButton } from "@/components/UI/atoms/button/outlined";
+import { ROWS_PER_PAGE } from "@/src/config/constants";
 
 const renderHeader = (col) => (
   <th
@@ -80,18 +82,27 @@ const columns = [
 
 export const MyBondTxsTable = () => {
   const [maxItems, setMaxItems] = useState(10);
-  const { data, loading, page, maxPage, setPage } = useBondTxs({
-    maxItems,
-  });
+  const [itemsToQuery, setItemsToQuery] = useState(ROWS_PER_PAGE);
+  const [itemsToSkip, setItemsToSkip] = useState(0);
+  const { data, loading, page, maxPage, setPage, isShowMoreVisible } =
+    useBondTxs({
+      maxItems,
+      itemsToQuery,
+      itemsToSkip,
+    });
 
   const { account, chainId } = useWeb3React();
 
+  const setPagination = () => {
+    setItemsToSkip((prev) => prev + ROWS_PER_PAGE);
+  };
   // Go to page 1 if maxItems changes
   useEffect(() => {
     setPage(1);
   }, [maxItems, setPage]);
 
   const { blockNumber, transactions, totalCount, lpTokenAddress } = data;
+
   return (
     <>
       {blockNumber && (
@@ -127,6 +138,13 @@ export const MyBondTxsTable = () => {
             </tbody>
           )}
         </Table>
+        {isShowMoreVisible && (
+          <div className="flex justify-center">
+            <OutlinedButton className={"m-auto"} onClick={setPagination}>
+              Show More
+            </OutlinedButton>
+          </div>
+        )}
         <TablePagination
           skip={maxItems * (page - 1)}
           limit={maxItems}
