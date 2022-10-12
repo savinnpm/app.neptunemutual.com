@@ -38,7 +38,7 @@ export function LiquidityProductModal ({ product, setShowModal }) {
           >
             <CloseIcon width={24} height={24} />
           </button>
-          <img src={imgSrc} alt={product.infoObj.productName} className='w-8 h-8' />
+          <img src={imgSrc} alt={product.infoObj.productName} className='w-8 h-8 mt-6 mb-2' />
 
           <span className='flex-grow overflow-hidden font-bold text-h4 md:pl-3 md:text-h3 whitespace-nowrap text-ellipsis'>
             {product.infoObj.productName} Cover Terms
@@ -52,13 +52,13 @@ export function LiquidityProductModal ({ product, setShowModal }) {
             Cover Rules
           </p>
 
-          <p className='font-poppins text-404040 text-md md:text-sm'>
+          <p className='font-poppins text-404040 text-md md:text-sm xs:text-h6'>
             Carefully read the following terms and conditions. For a successful
             claim payout, all of the following points must be true.
           </p>
 
           <ul
-            className='mt-5 list-disc text-md marker:text-xs font-poppins text-404040 md:text-sm md:leading-5'
+            className='mt-5 list-disc text-md marker:text-xs font-poppins text-404040 md:text-sm xs:text-h6 md:leading-5'
             data-testid='cover-rules'
           >
             <CoverParameters titleClassName='text-sm mt-10 mb-6 font-semibold font-sora' parameters={product.infoObj.parameters} />
