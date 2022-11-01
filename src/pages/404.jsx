@@ -10,7 +10,7 @@ export default function PageNotFound () {
   const router = useRouter()
   const { account, chainId } = useWeb3React()
 
-  analyticsLogger(() => logPageLoad(chainId, account ?? null, router.pathname))
+  analyticsLogger(() => logPageLoad(chainId, account ?? null, router.asPath))
 
   return (
     <div className='max-w-full bg-white'>
