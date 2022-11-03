@@ -16,7 +16,7 @@ import { useAppConstants } from '@/src/context/AppConstants'
 import { analyticsLogger } from '@/utils/logger'
 import { log } from '@/src/services/logs'
 import { useWeb3React } from '@web3-react/core'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 
 export const ClaimBondModal = ({
   modalTitle,
@@ -32,7 +32,7 @@ export const ClaimBondModal = ({
 
   const { chainId, account } = useWeb3React()
 
-  const handleLog = (sequence) => {
+  const handleLog = useCallback((sequence) => {
     const funnel = 'Claim Bond'
     const journey = 'bond-page'
     let step, event
@@ -62,11 +62,11 @@ export const ClaimBondModal = ({
     analyticsLogger(() => {
       log(chainId, funnel, journey, step, sequence, account, event, {})
     })
-  }
+  }, [account, chainId])
 
   useEffect(() => {
     if (isOpen) handleLog(2)
-  }, [isOpen])
+  }, [isOpen, handleLog])
 
   return (
     <ModalRegular isOpen={isOpen} onClose={onClose} disabled={claiming}>
