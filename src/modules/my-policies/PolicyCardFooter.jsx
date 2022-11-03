@@ -8,6 +8,10 @@ import { t, Trans } from '@lingui/macro'
 import { useRouter } from 'next/router'
 import { useTokenDecimals } from '@/src/hooks/useTokenDecimals'
 import { Routes } from '@/src/config/routes'
+import { useWeb3React } from '@web3-react/core'
+import { analyticsLogger } from '@/utils/logger'
+import { log } from '@/src/services/logs'
+import { useCoverOrProductData } from '@/src/hooks/useCoverOrProductData'
 
 export const PolicyCardFooter = ({
   coverKey,
@@ -65,6 +69,54 @@ export const PolicyCardFooter = ({
     })
   }
 
+  const { account, chainId } = useWeb3React()
+
+  const coverInfo = useCoverOrProductData({
+    coverKey: coverKey,
+    productKey: productKey
+  })
+
+  const handleLog = () => {
+    const funnel = 'Claim Cover'
+    const journey = 'my-policies-page'
+
+    const step = 'claim-button'
+    const sequence = 1
+    const event = 'click'
+    let props
+
+    const expiryDate = parseInt(report?.claimExpiresAt)
+    const d = new Date(expiryDate)
+    const expiryDateMonth = d.getMonth() + 1
+    const expiryDateMonthFormatted = d.toLocaleString('default', { month: 'long' })
+
+    if (coverInfo?.cover) {
+      props = {
+        coverKey,
+        coverName: coverInfo.cover.infoObj.coverName,
+        productKey,
+        productName: coverInfo.infoObj.productName,
+        expiryDate,
+        expiryDateMonth,
+        expiryDateMonthFormatted
+      }
+    }
+
+    if (!coverInfo?.cover) {
+      props = {
+        coverKey,
+        coverName: coverInfo.infoObj.coverName,
+        expiryDate,
+        expiryDateMonth,
+        expiryDateMonthFormatted
+      }
+    }
+
+    analyticsLogger(() => {
+      log(chainId, funnel, journey, step, sequence, account, event, props)
+    })
+  }
+
   return (
     <>
       {/* Stats */}
@@ -111,6 +163,7 @@ export const PolicyCardFooter = ({
           <a
             className='flex justify-center py-2.5 w-full bg-4e7dd9 text-white text-sm font-semibold uppercase rounded-lg mt-2 mb-4'
             data-testid='claim-link'
+            onClick={handleLog}
           >
             <Trans>Claim</Trans>
           </a>
